@@ -27,7 +27,7 @@ const CustomerDetailsPage = () => {
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
   const navigate = useNavigate();
-  const materialOptions = ['60 mm','40 mm','10mm', '6 mm', '1/2 x 3/4', '3/8', 'crush sand', 'M-Sand','P-Sand', 'Other'];
+  const materialOptions = ['60 mm','60+40 mm','40 mm','10mm', '6 mm', '1/2 x 3/4', '3/8', 'crush sand', 'M-Sand','P-Sand','GSB', 'Other'];
 const vehicleOptions = ['CU9684','EM8744', 'FL9684', 'GJ4078', 'EM9772', 'GJ2849', 'Other'];
 
 

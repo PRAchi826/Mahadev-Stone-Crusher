@@ -17,7 +17,10 @@ function App() {
         <Route path="/" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/customers/:id" element={<CustomerDetails />} />
-        <Route path="/invoice/:id" element={<InvoicePage />} />
+        
+        <Route path="/invoice/:id" element={<InvoicePage isPublicView={false} />} />
+        <Route path="/invoice/:id/view" element={<InvoicePage isPublicView={true} />} />
+
 
 
         {/* Add more routes here */}
