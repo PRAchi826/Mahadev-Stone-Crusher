@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
 import { useNavigate } from 'react-router-dom';
-import { User, Phone, MapPin } from 'lucide-react';
+import { User, Phone, MapPin, Trash2 } from 'lucide-react';
 
 
 const CustomerDetailsPage = () => {
@@ -29,6 +29,8 @@ const CustomerDetailsPage = () => {
   const navigate = useNavigate();
   const materialOptions = ['60 mm','60+40 mm','40 mm','10mm', '6 mm', '1/2 x 3/4', '3/8', 'crush sand', 'M-Sand','P-Sand','GSB', 'Other'];
 const vehicleOptions = ['CU9684','EM8744', 'FL9684', 'GJ4078', 'EM9772', 'GJ2849', 'Other'];
+
+
 
 
   useEffect(() => {
@@ -73,6 +75,27 @@ const vehicleOptions = ['CU9684','EM8744', 'FL9684', 'GJ4078', 'EM9772', 'GJ2849
     navigate(`/invoice/${customer.id}?from=${fromDate}&to=${toDate}`);
 
   };
+  const handleDeleteTransaction = async (txnId) => {
+  if (!window.confirm("Are you sure you want to delete this transaction?")) return;
+
+  // Delete from Supabase
+  const { error } = await supabase
+    .from('transactions')
+    .delete()
+    .eq('id', txnId);
+
+  if (!error) {
+    // Update frontend state
+    setTransactions(transactions.filter(txn => txn.id !== txnId));
+    alert("Transaction deleted successfully.");
+  } else {
+    console.error("Error deleting transaction:", error);
+    alert("Failed to delete transaction.");
+  }
+};
+
+
+
 
   const handleAddTransaction = async (e) => {
     e.preventDefault();
@@ -260,6 +283,11 @@ material: formData.material === 'Other' ? formData.customMaterial : formData.mat
                 <td className="px-4 py-2 text-green-600">{txn.credit ? `₹ ${txn.credit}` : '-'} </td>
                 <td className="px-4 py-2 text-red-500"> {txn.debit ? `₹ ${txn.debit}` : '-'}</td>
                 <td className="px-4 py-2 font-semibold">{txn.balance}</td>
+                 <td className="px-4 py-2">
+        <button onClick={() => handleDeleteTransaction(txn.id)} className="text-red-600 hover:text-red-800">
+          <Trash2 className="w-5 h-5" />
+        </button>
+      </td>
               </tr>
             ))}
           </tbody>
