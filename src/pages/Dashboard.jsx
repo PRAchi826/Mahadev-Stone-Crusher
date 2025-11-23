@@ -176,6 +176,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "../supabaseClient";
 import AddCustomerModal from "../components/AddCustomerModal";
 import { Search, Filter, SortAsc } from "lucide-react";
+import { Trash2 } from "lucide-react";
 
 const Dashboard = () => {
   const [customers, setCustomers] = useState([]);
@@ -256,6 +257,35 @@ const [willGet, setWillGet] = useState(0);
         return list;
     }
   };
+
+  const deleteCustomer = async (customerId) => {
+  const confirmDelete = window.confirm(
+    "Are you sure you want to delete this customer? This will also delete ALL their transactions."
+  );
+
+  if (!confirmDelete) return;
+
+  // 1️⃣ Delete all transactions of this customer first (FK constraint)
+  await supabase
+    .from("transactions")
+    .delete()
+    .eq("customer_id", customerId);
+
+  // 2️⃣ Delete the customer
+  const { error } = await supabase
+    .from("customers")
+    .delete()
+    .eq("id", customerId);
+
+  if (error) {
+    alert("Error deleting customer");
+    console.error(error);
+  } else {
+    alert("Customer deleted successfully");
+    fetchCustomers(); // Refresh UI
+  }
+};
+
 
   const applySort = (list) => {
     return [...list].sort((a, b) => {
@@ -370,15 +400,16 @@ const [willGet, setWillGet] = useState(0);
             <tr>
               <th className="p-4">Name</th>
               <th className="p-4">Balance</th>
+              <th className="p-4">Action</th>
             </tr>
           </thead>
           <tbody>
             {filteredCustomers.map((c) => (
               <tr key={c.id}
-                onClick={() => handleCustomerClick(c)}
                 className="cursor-pointer hover:bg-gray-100 transition-colors">
-                <td className="p-4 text-gray-800">{c.name}</td>
+                <td  onClick={() => handleCustomerClick(c)} className="p-4 text-gray-800">{c.name}</td>
                 <td
+                  onClick={() => handleCustomerClick(c)}
                   className={`p-4 font-medium ${
                     c.balance > 0
                       ? "text-green-700"
@@ -389,6 +420,17 @@ const [willGet, setWillGet] = useState(0);
                 >
                   ₹{c.balance.toLocaleString()}
                 </td>
+                <td className="p-4">
+    <button
+      onClick={(e) => {
+        e.stopPropagation(); // Prevent row click navigation
+        deleteCustomer(c.id);
+      }}
+      className="cursor-pointer hover:bg-gray-100 transition-colors"
+    >
+      <Trash2 className="w-5 h-5" />
+    </button>
+  </td>
                
               </tr>
             ))}
