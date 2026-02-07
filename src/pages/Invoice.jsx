@@ -32,7 +32,7 @@ function InvoicePage({ isPublicView = false }) {
         .eq('customer_id', id)
         .gte("transaction_date", fromDate)
         .lte("transaction_date", toDate)
-        .order("transaction_date", { ascending: true });
+        .order("created_at", { ascending: true });
 
       if (customerError || transactionError) {
         console.error(customerError || transactionError);
